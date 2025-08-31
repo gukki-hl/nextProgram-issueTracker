@@ -1,5 +1,6 @@
+import { Button } from "@radix-ui/themes";
 export default function Home() {
   return (
-   <p>hello gukki</p>
+   <Button>new issue</Button>
   )
 }
