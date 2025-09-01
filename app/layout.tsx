@@ -4,7 +4,8 @@ import "./globals.css";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import NarBar from "./navbar";
-import { Theme, ThemePanel } from "@radix-ui/themes";
+import { Theme } from "@radix-ui/themes";
+import ClientThemePanel from './ClientThemePanel'
 const inter = Inter({
   subsets: ["latin"],
   display: "swap",
@@ -27,7 +28,7 @@ export default function RootLayout({
         <Theme accentColor="sky">
           <NarBar />
           <main className="p-5">{children}</main>
-          <ThemePanel />
+          <ClientThemePanel />
         </Theme>
       </body>
     </html>
