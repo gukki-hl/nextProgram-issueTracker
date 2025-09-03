@@ -32,15 +32,23 @@ const NewIssuePage = () => {
   } = useForm<IssueForm>({
     resolver: zodResolver(createIssueSchema),
   });
-  const [value, setValue] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
   const router = useRouter();
-  // 用 useCallback 保证 onChange 函数引用稳定（避免子组件重复渲染）
-  const onChange = useCallback((value: string) => {
-    setValue(value); // 更新本地状态
-  }, []);
 
+  const onSubmit = handleSubmit(async (data) => {
+    try {
+      setIsSubmitting(true);
+      //提交表单数据到/api/issues
+      await axios.post("/api/issues", data);
+      //成功后跳转到/issues页面
+      router.push("/issues");
+    } catch (error) {
+      setIsSubmitting(false);
+      // 捕获异常，设置全局错误提示
+      setError("An unexpected error occurred");
+    }
+  });
   return (
     <div className="max-w-xl">
       {/* 如果存在全局错误信息，显示红色提示框 */}
@@ -49,22 +57,7 @@ const NewIssuePage = () => {
           <Callout.Text>{error}</Callout.Text>
         </Callout.Root>
       )}
-      <form
-        className="space-y-3"
-        onSubmit={handleSubmit(async (data) => {
-          try {
-            setIsSubmitting(true);
-            //提交表单数据到/api/issues
-            await axios.post("/api/issues", data);
-            //成功后跳转到/issues页面
-            router.push("/issues");
-          } catch (error) {
-            setIsSubmitting(false);
-            // 捕获异常，设置全局错误提示
-            setError("An unexpected error occurred");
-          }
-        })}
-      >
+      <form className="space-y-3" onSubmit={onSubmit}>
         {/* 输入框 */}
         <TextField.Root placeholder="Search the docs…" {...register("title")}>
           <TextField.Slot>
@@ -80,10 +73,8 @@ const NewIssuePage = () => {
           render={({ field }) => (
             <SimpleMDE
               {...field} // 注入 RHF 的 value 和 onChange
-              value={value} // 本地状态
               onChange={(val) => {
-                setValue(val), // 更新本地状态
-                  field.onChange(val); // 同步到 RHF 表单状态
+                field.onChange(val); // 同步到 RHF 表单状态
               }}
             />
           )}
