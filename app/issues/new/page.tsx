@@ -13,6 +13,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { createIssueSchema } from "@/app/validationSchemas";
 import { z } from "zod";
 import ErrorMessage from "@/app/component/ErrorMessage";
+import Spinner from "@/app/component/Spinner";
 
 // 定义表单类型
 type IssueForm = z.infer<typeof createIssueSchema>;
@@ -32,6 +33,7 @@ const NewIssuePage = () => {
     resolver: zodResolver(createIssueSchema),
   });
   const [value, setValue] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
   const router = useRouter();
   // 用 useCallback 保证 onChange 函数引用稳定（避免子组件重复渲染）
@@ -51,11 +53,13 @@ const NewIssuePage = () => {
         className="space-y-3"
         onSubmit={handleSubmit(async (data) => {
           try {
+            setIsSubmitting(true);
             //提交表单数据到/api/issues
             await axios.post("/api/issues", data);
             //成功后跳转到/issues页面
             router.push("/issues");
           } catch (error) {
+            setIsSubmitting(false);
             // 捕获异常，设置全局错误提示
             setError("An unexpected error occurred");
           }
@@ -87,7 +91,10 @@ const NewIssuePage = () => {
         {/* Markdown 编辑器错误提示 */}
         <ErrorMessage>{errors.description?.message}</ErrorMessage>
         {/* 提交按钮 */}
-        <Button>Submit New Issue</Button>
+        <Button disabled={isSubmitting}>
+          Submit New Issue
+          {isSubmitting && <Spinner />}
+        </Button>
       </form>
     </div>
   );
