@@ -1,6 +1,6 @@
 "use client";
 
-import { TextField, Button } from "@radix-ui/themes";
+import { TextField, Button, Callout } from "@radix-ui/themes";
 import dynamic from "next/dynamic";
 import "easymde/dist/easymde.min.css";
 // @ts-ignore
@@ -22,7 +22,8 @@ const SimpleMDE = dynamic(() => import("react-simplemde-editor"), {
 
 const NewIssuePage = () => {
   const { register, control, handleSubmit } = useForm<IssueForm>();
-  const [value, setValue] = useState("Initial value");
+  const [value, setValue] = useState("");
+  const [error, setError] = useState("");
   const router = useRouter();
   // 用 useCallback 保证 onChange 函数引用稳定（避免子组件重复渲染）
   const onChange = useCallback((value: string) => {
@@ -30,40 +31,51 @@ const NewIssuePage = () => {
   }, []);
 
   return (
-    <form
-      className="max-w-xl space-y-3"
-      onSubmit={handleSubmit(async (data) => {
-        //提交表单数据到/api/issues
-        await axios.post("/api/issues", data);
-        //成功后跳转到/issues页面
-        router.push("/issues");
-      })}
-    >
-      {/* 输入框 */}
-      <TextField.Root placeholder="Search the docs…" {...register("title")}>
-        <TextField.Slot>
-          <MagnifyingGlassIcon height="16" width="16" />
-        </TextField.Slot>
-      </TextField.Root>
-      {/* Markdown 编辑器（只在客户端渲染） */}
-      <Controller
-        name="description"
-        control={control}//表单控制器
-        render={({ field }) => (
-          <SimpleMDE
-            {...field}// 注入 RHF 的 value 和 onChange
-            value={value} // 本地状态
-            onChange={(val) => {
-              setValue(val), // 更新本地状态
-              field.onChange(val); // 同步到 RHF 表单状态
-            }}
-          />
-        )}
-      />
+    <div className="max-w-xl">
+      {error && (
+        <Callout.Root color="red" className="mb-5">
+          <Callout.Text>{error}</Callout.Text>
+        </Callout.Root>
+      )}
+      <form
+        className="space-y-3"
+        onSubmit={handleSubmit(async (data) => {
+          try {
+            //提交表单数据到/api/issues
+            await axios.post("/api/issues", data);
+            //成功后跳转到/issues页面
+            router.push("/issues");
+          } catch (error) {
+            setError("An unexpected error occurred");
+          }
+        })}
+      >
+        {/* 输入框 */}
+        <TextField.Root placeholder="Search the docs…" {...register("title")}>
+          <TextField.Slot>
+            <MagnifyingGlassIcon height="16" width="16" />
+          </TextField.Slot>
+        </TextField.Root>
+        {/* Markdown 编辑器（只在客户端渲染） */}
+        <Controller
+          name="description"
+          control={control} //表单控制器
+          render={({ field }) => (
+            <SimpleMDE
+              {...field} // 注入 RHF 的 value 和 onChange
+              value={value} // 本地状态
+              onChange={(val) => {
+                setValue(val), // 更新本地状态
+                  field.onChange(val); // 同步到 RHF 表单状态
+              }}
+            />
+          )}
+        />
 
-      {/* 提交按钮 */}
-      <Button>Submit New Issue</Button>
-    </form>
+        {/* 提交按钮 */}
+        <Button>Submit New Issue</Button>
+      </form>
+    </div>
   );
 };
 
