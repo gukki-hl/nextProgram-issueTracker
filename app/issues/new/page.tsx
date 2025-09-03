@@ -1,6 +1,6 @@
 "use client";
 
-import { TextField, Button, Callout, Text } from "@radix-ui/themes";
+import { TextField, Button, Callout } from "@radix-ui/themes";
 import dynamic from "next/dynamic";
 import "easymde/dist/easymde.min.css";
 // @ts-ignore
@@ -12,6 +12,7 @@ import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createIssueSchema } from "@/app/validationSchemas";
 import { z } from "zod";
+import ErrorMessage from "@/app/component/ErrorMessage";
 
 // 定义表单类型
 type IssueForm = z.infer<typeof createIssueSchema>;
@@ -67,11 +68,7 @@ const NewIssuePage = () => {
           </TextField.Slot>
         </TextField.Root>
         {/* 标题字段错误提示 */}
-        {errors.title && (
-          <Text color="red" as="p">
-            {errors.title.message}
-          </Text>
-        )}
+        <ErrorMessage>{errors.title?.message}</ErrorMessage>
         {/* Markdown 编辑器（只在客户端渲染） */}
         <Controller
           name="description" //表单字段名
@@ -88,11 +85,7 @@ const NewIssuePage = () => {
           )}
         />
         {/* Markdown 编辑器错误提示 */}
-        {errors.description && (
-          <Text color="red" as="p">
-            {errors.description.message}
-          </Text>
-        )}
+        <ErrorMessage>{errors.description?.message}</ErrorMessage>
         {/* 提交按钮 */}
         <Button>Submit New Issue</Button>
       </form>
