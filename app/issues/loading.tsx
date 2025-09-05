@@ -1,18 +1,13 @@
-import { prisma } from "@/prisma/client";
 import { Table } from "@radix-ui/themes";
-import delay from "delay";
-import IssueStatusBadge from "../component/IssueStatusBadge";
+import Skeleton from "react-loading-skeleton";
+import 'react-loading-skeleton/dist/skeleton.css'
 import IssuesAction from "./issuesAction";
-// 定义一个异步组件 IssuesPage（Next.js 13 的 Server Component 支持 async）
-const IssuesPage = async () => {
-    await delay(2000)
 
-  //使用prisma从数据库中查询issue表里的所有数据
-  const issues = await prisma.issue.findMany();
-  // 返回渲染的 JSX
+const LoadingIssuersPage = () => {
+  const issues = [1, 2, 3, 4, 5];
   return (
     <div>
-      <IssuesAction/>
+      <IssuesAction />
       <Table.Root variant="surface">
         <Table.Header>
           <Table.Row>
@@ -26,20 +21,19 @@ const IssuesPage = async () => {
           </Table.Row>
         </Table.Header>
         <Table.Body>
-          {/* 遍历 issues 数据，逐行数据渲染 */}
           {issues.map((i) => (
-            <Table.Row key={i.id}>
+            <Table.Row key={i}>
               <Table.Cell>
-                {i.title}
+                <Skeleton />
                 <div className="block md:hidden">
-                  <IssueStatusBadge status={i.status} />
+                  <Skeleton /> 
                 </div>
               </Table.Cell>
               <Table.Cell className="hidden md:table-cell">
-                <IssueStatusBadge status={i.status} />
+                <Skeleton />
               </Table.Cell>
               <Table.Cell className="hidden md:table-cell">
-                {i.createdAt.toDateString()}
+                <Skeleton />
               </Table.Cell>
             </Table.Row>
           ))}
@@ -49,4 +43,4 @@ const IssuesPage = async () => {
   );
 };
 
-export default IssuesPage;
+export default LoadingIssuersPage;
