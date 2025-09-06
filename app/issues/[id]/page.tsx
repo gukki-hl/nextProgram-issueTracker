@@ -3,7 +3,7 @@ import { prisma } from "@/prisma/client";
 import { Card, Flex, Heading, Text } from "@radix-ui/themes";
 import { notFound } from "next/navigation";
 import React from "react";
-
+import ReactMarkdown from "react-markdown";
 //params 是 Next.js 动态路由传递进来的参数
 // 比如路径 /issues/123 => params.id = "123"
 interface Props {
@@ -26,8 +26,8 @@ const IssueDetailPage = async ({ params }: Props) => {
         <IssueStatusBadge status={issue.status} />
         <Text>{issue.createdAt.toDateString()}</Text>
       </Flex>
-      <Card>
-        <p>{issue.description}</p>
+      <Card className="prose" mt="4">
+        <ReactMarkdown>{issue.description}</ReactMarkdown>
       </Card>
     </div>
   );
