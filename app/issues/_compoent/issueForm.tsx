@@ -5,7 +5,7 @@ import "easymde/dist/easymde.min.css";
 import dynamic from "next/dynamic";
 // @ts-ignore
 import { ErrorMessage, Spinner } from "@/app/component";
-import { createIssueSchema } from "@/app/validationSchemas";
+import { IssueSchema } from "@/app/validationSchemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
 import axios from "axios";
@@ -16,7 +16,7 @@ import { z } from "zod";
 import { Issue } from "@prisma/client";
 
 // 定义表单类型
-type IssueForm = z.infer<typeof createIssueSchema>;
+type IssueForm = z.infer<typeof IssueSchema>;
 
 // 动态引入 SimpleMDE，关闭 SSR，避免 document 未定义错误
 const SimpleMDE = dynamic(() => import("react-simplemde-editor"), {
@@ -30,7 +30,7 @@ const IssueFormData = ({ issue }: { issue?: Issue }) => {
     handleSubmit,
     formState: { errors },
   } = useForm<IssueForm>({
-    resolver: zodResolver(createIssueSchema),
+    resolver: zodResolver(IssueSchema),
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
