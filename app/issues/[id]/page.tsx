@@ -1,4 +1,6 @@
+import IssueStatusBadge from "@/app/component/IssueStatusBadge";
 import { prisma } from "@/prisma/client";
+import { Card, Flex, Heading, Text } from "@radix-ui/themes";
 import { notFound } from "next/navigation";
 import React from "react";
 
@@ -9,7 +11,6 @@ interface Props {
 }
 
 const IssueDetailPage = async ({ params }: Props) => {
-
   //使用prisma查询数据库issue表里的id
   //路径输入的 params.id 是string，用parseInt 转为number
   const issue = await prisma.issue.findUnique({
@@ -20,10 +21,14 @@ const IssueDetailPage = async ({ params }: Props) => {
 
   return (
     <div>
-      <p>{issue.title}</p>
-      <p>{issue.description}</p>
-      <p>{issue.status}</p>
-      <p>{issue.createdAt.toDateString()}</p>
+      <Heading>{issue.title}</Heading>
+      <Flex gap="5">
+        <IssueStatusBadge status={issue.status} />
+        <Text>{issue.createdAt.toDateString()}</Text>
+      </Flex>
+      <Card>
+        <p>{issue.description}</p>
+      </Card>
     </div>
   );
 };
