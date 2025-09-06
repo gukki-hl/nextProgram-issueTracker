@@ -1,13 +1,10 @@
 import { prisma } from "@/prisma/client";
 import { Table } from "@radix-ui/themes";
-import delay from "delay";
-import IssueStatusBadge from "../component/IssueStatusBadge";
+import {IssueStatusBadge,Link} from '@/app/component'
 import IssuesAction from "./issuesAction";
-import Link from "../component/Link";
 
 // 定义一个异步组件 IssuesPage（Next.js 13 的 Server Component 支持 async）
 const IssuesPage = async () => {
-  await delay(2000);
 
   //使用prisma从数据库中查询issue表里的所有数据
   const issues = await prisma.issue.findMany();

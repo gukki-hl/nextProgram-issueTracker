@@ -1,19 +1,18 @@
 "use client";
 
-import { TextField, Button, Callout } from "@radix-ui/themes";
-import dynamic from "next/dynamic";
+import { Button, Callout, TextField } from "@radix-ui/themes";
 import "easymde/dist/easymde.min.css";
+import dynamic from "next/dynamic";
 // @ts-ignore
-import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
-import { useForm, Controller } from "react-hook-form";
-import axios from "axios";
-import { useCallback, useState } from "react";
-import { useRouter } from "next/navigation";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { ErrorMessage, Spinner } from '@/app/component';
 import { createIssueSchema } from "@/app/validationSchemas";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
+import axios from "axios";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
-import ErrorMessage from "@/app/component/ErrorMessage";
-import Spinner from "@/app/component/Spinner";
 
 // 定义表单类型
 type IssueForm = z.infer<typeof createIssueSchema>;
