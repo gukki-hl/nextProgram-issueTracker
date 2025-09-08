@@ -39,8 +39,10 @@ const IssueFormData = ({ issue }: { issue?: Issue }) => {
   const onSubmit = handleSubmit(async (data) => {
     try {
       setIsSubmitting(true);
+      //更新表单数据
+      if (issue) axios.patch("/api/issues/" + issue.id, data);
       //提交表单数据到/api/issues
-      await axios.post("/api/issues", data);
+      else await axios.post("/api/issues", data);
       //成功后跳转到/issues页面
       router.push("/issues");
     } catch (error) {
@@ -88,7 +90,7 @@ const IssueFormData = ({ issue }: { issue?: Issue }) => {
         <ErrorMessage>{errors.description?.message}</ErrorMessage>
         {/* 提交按钮 */}
         <Button disabled={isSubmitting}>
-          Submit New Issue
+          {issue ? "Updata Issue" : "Submit New Issue"}
           {isSubmitting && <Spinner />}
         </Button>
       </form>
