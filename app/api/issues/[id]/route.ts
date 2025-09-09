@@ -29,3 +29,20 @@ export async function PATCH(
 
   return NextResponse.json(updataIssue);
 }
+
+//删除issue API
+export async function DELETE(
+  req: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  const issue = await prisma.issue.findUnique({
+    where: { id: parseInt(params.id) },
+  });
+  //如果问题不存在，返回404错误
+  if (!issue) return NextResponse.json("此问题 不存在", { status: 404 });
+  //如果存在，使用Prisma删除用户
+  await prisma.issue.delete({
+    where: { id: issue.id },
+  });
+  return NextResponse.json({});
+}
