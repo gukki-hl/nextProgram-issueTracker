@@ -8,12 +8,13 @@ export async function PATCH(
   { params }: { params: { id: string } }
 ) {
   const body = await req.json();
+  const { id } = await params;
   const validation = IssueSchema.safeParse(body);
   if (!validation.success)
     return NextResponse.json(validation.error.errors, { status: 400 });
 
   const issue = await prisma.issue.findUnique({
-    where: { id: parseInt(params.id) },
+    where: { id: parseInt(id) },
   });
 
   if (!issue) return NextResponse.json("此id 不存在", { status: 404 });

@@ -2,19 +2,20 @@
 
 import { Button, Callout, TextField } from "@radix-ui/themes";
 import "easymde/dist/easymde.min.css";
-import dynamic from "next/dynamic";
 // @ts-ignore
 import { ErrorMessage, Spinner } from "@/app/component";
 import { IssueSchema } from "@/app/validationSchemas";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Issue } from "@prisma/client";
 import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { z } from "zod";
-import { Issue } from "@prisma/client";
 
+import { z } from "zod";
+import dynamic from "next/dynamic";
+// import SimpleMDE from "react-simplemde-editor";
 // 定义表单类型
 type IssueForm = z.infer<typeof IssueSchema>;
 

@@ -11,10 +11,11 @@ interface Props {
 }
 
 const IssueDetailPage = async ({ params }: Props) => {
+    const {id} = await params;
   //使用prisma查询数据库issue表里的id
   //路径输入的 params.id 是string，用parseInt 转为number
   const issue = await prisma.issue.findUnique({
-    where: { id: parseInt(params.id) }, // 按主键 id 唯一查询
+    where: { id: parseInt(id) }, // 按主键 id 唯一查询
   });
   //如果没找到输入的id路径，触发next.js内置的404页面
   if (!issue) notFound();
@@ -30,5 +31,4 @@ const IssueDetailPage = async ({ params }: Props) => {
     </Grid>
   );
 };
-
 export default IssueDetailPage;
