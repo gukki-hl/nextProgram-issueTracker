@@ -1,16 +1,18 @@
 "use client";
 
-import { AlertDialog, Button, Flex } from "@radix-ui/themes";
+import { AlertDialog, Button, Flex, Spinner } from "@radix-ui/themes";
 import axios from "axios";
-import React, { useState } from "react";
+import React, { use, useState } from "react";
 import { useRouter } from "next/navigation";
 
 const DeleteIssueButon = ({ issueId }: { issueId: number }) => {
   const [error, setError] = useState(false);
+  const [isDelete, setIsDelete] = useState(false);
   const router = useRouter();
 
   const deleteIssue = async () => {
     try {
+      setIsDelete(true);
       // throw new Error();
       if (issueId) {
         await axios.delete("/api/issues/" + issueId);
@@ -19,6 +21,7 @@ const DeleteIssueButon = ({ issueId }: { issueId: number }) => {
         router.refresh(); //刷新缓存
       }
     } catch {
+      setIsDelete(false);
       setError(true);
     }
   };
@@ -27,7 +30,10 @@ const DeleteIssueButon = ({ issueId }: { issueId: number }) => {
     <>
       <AlertDialog.Root>
         <AlertDialog.Trigger>
-          <Button color="red">Delete Issue</Button>
+          <Button color="red" disabled={isDelete}>
+            Delete Issue
+            {isDelete && <Spinner />}
+          </Button>
         </AlertDialog.Trigger>
         <AlertDialog.Content maxWidth="450px">
           <AlertDialog.Title>Revoke access</AlertDialog.Title>
