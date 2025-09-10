@@ -17,7 +17,7 @@ const DeleteIssueButon = ({ issueId }: { issueId: number }) => {
       if (issueId) {
         await axios.delete("/api/issues/" + issueId);
         //成功后跳转到/issues页面
-        router.push("/issues");
+        router.push("/issues/list");
         router.refresh(); //刷新缓存
       }
     } catch {

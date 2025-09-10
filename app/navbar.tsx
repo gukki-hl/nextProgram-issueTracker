@@ -8,7 +8,7 @@ const navbar = () => {
   const currentPath = usePathname(); //获取当前路径
   const LINKS = [
     { label: "Dashboard", href: "/" },
-    { label: "issues", href: "/issues" },
+    { label: "issues", href: "/issues/list" },
   ];
   return (
     <nav className="flex space-x-6 border-b mb-5 px-5 h-14 items-center">

@@ -45,7 +45,7 @@ const IssueFormData = ({ issue }: { issue?: Issue }) => {
       //提交表单数据到/api/issues
       else await axios.post("/api/issues", data);
       //成功后跳转到/issues页面
-      router.push("/issues");
+      router.push("/issues/list");
       //客户端缓存， 每次加载都能刷新当前路由的数据或触发服务器组件重新渲染
       router.refresh()
     } catch (error) {
