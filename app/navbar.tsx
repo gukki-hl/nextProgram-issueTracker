@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React from "react";
 import { LuBug } from "react-icons/lu";
-import { Box, Flex } from "@radix-ui/themes";
+import { Avatar, Box, DropdownMenu, Flex, Text } from "@radix-ui/themes";
 const navbar = () => {
   const { status, data: session } = useSession();
   const currentPath = usePathname(); //获取当前路径
@@ -16,8 +16,8 @@ const navbar = () => {
   if (status === "loading") return null;
   return (
     <nav className="border-b mb-5 px-5 h-14 py-3 ">
-      <Flex justify='between'>
-        <Flex align='center' gap='5'>
+      <Flex justify="between">
+        <Flex align="center" gap="5">
           <Link href="/">
             <LuBug size={20} />
           </Link>
@@ -40,7 +40,25 @@ const navbar = () => {
         </Flex>
         <Box>
           {status === "authenticated" && (
-            <Link href="/api/auth/signout">SignOut</Link>
+            <DropdownMenu.Root>
+              <DropdownMenu.Trigger>
+                <Avatar
+                  src={session.user?.image!}
+                  fallback="?"
+                  size="3"
+                  radius="full"
+                  className="cursor-pointer"
+                />
+              </DropdownMenu.Trigger>
+              <DropdownMenu.Content>
+                <DropdownMenu.Label>
+                  <Text size="2">{session.user?.email}</Text>
+                </DropdownMenu.Label>
+                <DropdownMenu.Item>
+                  <Link href="/api/auth/signout">SignOut</Link>
+                </DropdownMenu.Item>
+              </DropdownMenu.Content>
+            </DropdownMenu.Root>
           )}
           {status === "unauthenticated" && (
             <Link href="/api/auth/signin">Login</Link>
