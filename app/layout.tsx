@@ -30,7 +30,7 @@ export default function RootLayout({
         <Theme accentColor="sky">
           <NarBar />
           <main className="p-5">{children}</main>
-          <ClientThemePanel />
+          {/* <ClientThemePanel /> */}
         </Theme>
         </AuthProvider>
       </body>

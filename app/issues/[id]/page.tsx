@@ -6,6 +6,7 @@ import IssueDatails from "./IssueDatails";
 import DeleteIssueButon from "./DeleteIssueButon";
 import { getServerSession } from "next-auth";
 import authOptions from "@/app/auth/authOption";
+import AssignSelect from "./AssignSelect";
 
 //params 是 Next.js 动态路由传递进来的参数
 // 比如路径 /issues/123 => params.id = "123"
@@ -32,6 +33,7 @@ const IssueDetailPage = async ({ params }: Props) => {
       {session && (
         <Box>
           <Flex direction="column" gap="4">
+            <AssignSelect/>
             <EditIssueButton issueId={issue.id} />
             <DeleteIssueButon issueId={issue.id} />
           </Flex>
