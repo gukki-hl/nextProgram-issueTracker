@@ -5,8 +5,9 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import NarBar from "./navbar";
 import { Theme } from "@radix-ui/themes";
-import ClientThemePanel from './ClientThemePanel'
+import ClientThemePanel from "./ClientThemePanel";
 import AuthProvider from "./auth/Provider";
+import QeuryClientProvider from "./QeuryClientProvider";
 const inter = Inter({
   subsets: ["latin"],
   display: "swap",
@@ -24,15 +25,17 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" >
+    <html lang="en">
       <body className={inter.variable}>
-        <AuthProvider>
-        <Theme accentColor="sky">
-          <NarBar />
-          <main className="p-5">{children}</main>
-          {/* <ClientThemePanel /> */}
-        </Theme>
-        </AuthProvider>
+        <QeuryClientProvider>
+          <AuthProvider>
+            <Theme accentColor="sky">
+              <NarBar />
+              <main className="p-5">{children}</main>
+              {/* <ClientThemePanel /> */}
+            </Theme>
+          </AuthProvider>
+        </QeuryClientProvider>
       </body>
     </html>
   );
