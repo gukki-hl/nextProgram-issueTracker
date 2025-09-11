@@ -11,12 +11,14 @@ datasource db {
 }
 
 model Issue {
-  id          Int      @id @default(autoincrement())
-  title       String   @db.VarChar(225)
-  description String   @db.Text
-  status      Status   @default(OPEN)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id               Int      @id @default(autoincrement())
+  title            String   @db.VarChar(225)
+  description      String   @db.Text
+  status           Status   @default(OPEN)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  assignedToUserId String?  @db.VarChar(255)
+  assignedToUser   User?    @relation(fields: [assignedToUserId], references: [id])
 }
 
 enum Status {
@@ -44,7 +46,7 @@ model Account {
   @@unique([provider, providerAccountId])
   @@map("accounts")
 }
- 
+
 model Session {
   id           String   @id @default(cuid())
   sessionToken String   @unique
@@ -54,7 +56,7 @@ model Session {
 
   @@map("sessions")
 }
- 
+
 model User {
   id             String    @id @default(cuid())
   name           String?
@@ -63,10 +65,11 @@ model User {
   image          String?
   accounts       Account[]
   sessions       Session[]
+  assignedIssues Issue[]
 
   @@map("users")
 }
- 
+
 model VerificationToken {
   identifier String
   token      String
