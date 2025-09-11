@@ -5,21 +5,9 @@ process.env.GLOBAL_AGENT_HTTPS_PROXY = "http://127.0.0.1:7890";
 require("global-agent/bootstrap");
 
 
+import authOptions from "@/app/auth/authOption";
 import NextAuth from "next-auth";
-import GoogleProvider from "next-auth/providers/google";
-import { PrismaAdapter } from "@next-auth/prisma-adapter";
-import { prisma } from "@/prisma/client";
 
-export const handler = NextAuth({
-  adapter: PrismaAdapter(prisma),
-  providers: [
-    GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID!,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-    }),
-  ],
-  session: { strategy: "jwt" },
-  debug: true,
-});
 
-export { handler as GET, handler as POST }; // App Router 才用
+export const handler = NextAuth(authOptions);
+export { handler as GET, handler as POST };
