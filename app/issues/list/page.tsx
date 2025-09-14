@@ -1,14 +1,24 @@
 import { prisma } from "@/prisma/client";
 import { Table } from "@radix-ui/themes";
-import {IssueStatusBadge,Link} from '@/app/component'
-import IssuesAction from "./issuesAction";
+import { IssueStatusBadge, Link } from "@/app/component";
+import IssuesAction from "./IssuesAction";
+import { Status } from "@prisma/client";
 
-// 定义一个异步组件 IssuesPage（Next.js 13 的 Server Component 支持 async）
-const IssuesPage = async () => {
+interface IssuesPageProps {
+  searchParams: { status: Status };
+}
 
-  //使用prisma从数据库中查询issue表里的所有数据
-  const issues = await prisma.issue.findMany();
-  // 返回渲染的 JSX
+export default async function IssuesPage({ searchParams }: IssuesPageProps) {
+  const params = await searchParams;
+  const statuses = Object.values(Status);
+  const status = statuses.includes(params.status as Status)
+    ? (params.status as Status)
+    : undefined;
+
+  const issues = await prisma.issue.findMany({
+    where: { status },
+  });
+
   return (
     <div>
       <IssuesAction />
@@ -25,11 +35,10 @@ const IssuesPage = async () => {
           </Table.Row>
         </Table.Header>
         <Table.Body>
-          {/* 遍历 issues 数据，逐行数据渲染 */}
           {issues.map((i) => (
             <Table.Row key={i.id}>
               <Table.Cell>
-                <Link href={`/issues/${i.id}`}> {i.title}</Link>
+                <Link href={`/issues/${i.id}`}>{i.title}</Link>
                 <div className="block md:hidden">
                   <IssueStatusBadge status={i.status} />
                 </div>
@@ -46,6 +55,4 @@ const IssuesPage = async () => {
       </Table.Root>
     </div>
   );
-};
-export const dynamic = 'force-dynamic' 
-export default IssuesPage;
+}
