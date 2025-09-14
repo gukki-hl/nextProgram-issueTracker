@@ -6,32 +6,25 @@ import { Select } from "@radix-ui/themes";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import toast, { Toaster } from "react-hot-toast";
+
 const AssignSelect = ({ issue }: { issue: Issue }) => {
-  const {
-    data: users,
-    error,
-    isLoading,
-  } = useQuery<User[]>({
-    queryKey: ["users"],
-    queryFn: () => axios.get<User[]>("/api/users").then((res) => res.data),
-    staleTime: 60 * 1000, //数据新鲜时间60s,
-    retry: 3, //发生错误时再次请求次数
-  });
+  const assginIssue = (userId: string) => {
+    axios
+      .patch("/api/issues/" + issue.id, {
+        assignedToUserId: userId === "unassigned" ? null : userId,
+      })
+      .catch(() => {
+        toast.error("Changes could not be save");
+      });
+  };
+  const { data: users, error, isLoading } = useUsers();
   if (isLoading) return <Skeleton />;
   if (error) return null;
   return (
     <>
       <Select.Root
         defaultValue={issue.assignedToUserId || ""}
-        onValueChange={(userId) => {
-          axios
-            .patch("/api/issues/" + issue.id, {
-              assignedToUserId: userId === "unassigned" ? null : userId,
-            })
-            .catch(() => {
-              toast.error('Changes could not be save')
-            });
-        }}
+        onValueChange={assginIssue}
       >
         <Select.Trigger placeholder="Assign..." />
         <Select.Content>
@@ -51,4 +44,11 @@ const AssignSelect = ({ issue }: { issue: Issue }) => {
   );
 };
 
+const useUsers = () =>
+  useQuery<User[]>({
+    queryKey: ["users"],
+    queryFn: () => axios.get<User[]>("/api/users").then((res) => res.data),
+    staleTime: 60 * 1000, //数据新鲜时间60s,
+    retry: 3, //发生错误时再次请求次数
+  });
 export default AssignSelect;
