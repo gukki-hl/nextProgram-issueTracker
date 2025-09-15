@@ -5,6 +5,8 @@ import IssuesAction from "./IssuesAction";
 import { Issue, Status } from "@prisma/client";
 import NextLink from "next/link";
 import { ArrowUpIcon } from "@radix-ui/react-icons";
+
+// 定义页面 props 的类型：searchParams 是从 URL query 中解析出来的
 interface IssuesPageProps {
   searchParams: { status: Status; orderBy?: keyof Issue };
 }
@@ -17,13 +19,22 @@ const columns: { label: string; value: keyof Issue; className?: string }[] = [
 
 export default async function IssuesPage({ searchParams }: IssuesPageProps) {
   const params = await searchParams;
-  const statuses = Object.values(Status);
+  const statuses = Object.values(Status); //获取 Status 枚举值
+  // 判断 URL 里的 status 是否是合法的枚举值，如果不是就置为 undefined
   const status = statuses.includes(params.status as Status)
     ? (params.status as Status)
     : undefined;
-
+  // 检查传入的 orderBy 是否在 columns 中存在，如果合法则构造 Prisma 所需的排序对象
+  // { [params.orderBy]: "asc" } => 比如 { createdAt: "asc" }
+  const orderBy = columns
+    .map((c) => c.value)
+    .includes(params.orderBy as keyof Issue)
+    ? { [params.orderBy as string]: 'asc' }
+    : undefined;
+  // 查询数据库：根据 status 过滤，根据 orderBy 排序
   const issues = await prisma.issue.findMany({
-    where: { status },
+    where: { status }, //过滤
+    orderBy, //排序
   });
 
   return (
