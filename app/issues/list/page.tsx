@@ -29,7 +29,7 @@ export default async function IssuesPage({ searchParams }: IssuesPageProps) {
   const orderBy = columns
     .map((c) => c.value)
     .includes(params.orderBy as keyof Issue)
-    ? { [params.orderBy as string]: 'asc' }
+    ? { [params.orderBy as string]: "asc" }
     : undefined;
   // 查询数据库：根据 status 过滤，根据 orderBy 排序
   const issues = await prisma.issue.findMany({
@@ -44,7 +44,10 @@ export default async function IssuesPage({ searchParams }: IssuesPageProps) {
         <Table.Header>
           <Table.Row>
             {columns.map((column) => (
-              <Table.ColumnHeaderCell key={column.value}>
+              <Table.ColumnHeaderCell
+                key={column.value}
+                className={column.className}
+              >
                 <NextLink
                   href={{ query: { ...params, orderBy: column.value } }}
                 >

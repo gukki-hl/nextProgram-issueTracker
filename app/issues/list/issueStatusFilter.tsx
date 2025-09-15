@@ -1,7 +1,7 @@
 "use client";
 import { Status } from "@prisma/client";
 import { Select } from "@radix-ui/themes";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 const selectes: { label: string; value?: Status | "ALL" }[] = [
   { label: "All", value: "ALL" },
@@ -12,11 +12,19 @@ const selectes: { label: string; value?: Status | "ALL" }[] = [
 
 const IssueStatusFilter = () => {
   const router = useRouter();
+  const searchParams = useSearchParams(); //获取 URL 查询参数
+
   return (
     <>
       <Select.Root
+        defaultValue={searchParams.get("status") || "ALL"}
         onValueChange={(status) => {
-          router.push(`/issues/list?status=${status}`);
+          const params = new URLSearchParams(); //创建一个新的 URLSearchParams 对象
+          if (status) params.append("status", status);//如果有选择状态（status），将其添加到参数中
+          if (searchParams.get("orderBy"))//保留现有的排序参数（orderBy），如果存在的话
+            params.append("orderBy", searchParams.get("orderBy") as string);
+          const query = params.size ? `?${params.toString()}` : ""; //仅当有参数时（params.size > 0）才添加 ? 前缀
+          router.push("/issues/list" + query); //导航到新的 URL
         }}
       >
         <Select.Trigger placeholder="Select a status..." />
