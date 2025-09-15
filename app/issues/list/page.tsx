@@ -1,22 +1,14 @@
-import { prisma } from "@/prisma/client";
-import { Table } from "@radix-ui/themes";
-import { IssueStatusBadge, Link } from "@/app/component";
-import IssuesAction from "./IssuesAction";
-import { Issue, Status } from "@prisma/client";
-import NextLink from "next/link";
-import { ArrowUpIcon } from "@radix-ui/react-icons";
 import Pagination from "@/app/component/Pagination";
+import { prisma } from "@/prisma/client";
+import { Issue, Status } from "@prisma/client";
+import IssuesAction from "./IssuesAction";
+import IssueTable, { columnNames, IssueQuery } from "./IssueTable";
+import { Flex } from "@radix-ui/themes";
 
 // 定义页面 props 的类型：searchParams 是从 URL query 中解析出来的
 interface IssuesPageProps {
-  searchParams: { status: Status; orderBy?: keyof Issue; page: string };
+  searchParams: IssueQuery;
 }
-
-const columns: { label: string; value: keyof Issue; className?: string }[] = [
-  { label: "Issue", value: "title" },
-  { label: "Status", value: "status", className: "hidden md:table-cell" },
-  { label: "Create", value: "createdAt", className: "hidden md:table-cell" },
-];
 
 export default async function IssuesPage({ searchParams }: IssuesPageProps) {
   const params = await searchParams;
@@ -27,9 +19,7 @@ export default async function IssuesPage({ searchParams }: IssuesPageProps) {
     : undefined;
   // 检查传入的 orderBy 是否在 columns 中存在，如果合法则构造 Prisma 所需的排序对象
   // { [params.orderBy]: "asc" } => 比如 { createdAt: "asc" }
-  const orderBy = columns
-    .map((c) => c.value)
-    .includes(params.orderBy as keyof Issue)
+  const orderBy = columnNames.includes(params.orderBy as keyof Issue)
     ? { [params.orderBy as string]: "asc" }
     : undefined;
 
@@ -44,55 +34,17 @@ export default async function IssuesPage({ searchParams }: IssuesPageProps) {
     take: pageSize, //取多少条
   });
   // 获取总条数，用于计算总页数
-  const issueCount = await prisma.issue.count({ where }); 
+  const issueCount = await prisma.issue.count({ where });
 
   return (
-    <div>
+    <Flex direction="column" gap="4">
       <IssuesAction />
-      <Table.Root variant="surface">
-        <Table.Header>
-          <Table.Row>
-            {columns.map((column) => (
-              <Table.ColumnHeaderCell
-                key={column.value}
-                className={column.className}
-              >
-                <NextLink
-                  href={{ query: { ...params, orderBy: column.value } }}
-                >
-                  {column.label}
-                </NextLink>
-                {column.value === params.orderBy && (
-                  <ArrowUpIcon className="inline" />
-                )}
-              </Table.ColumnHeaderCell>
-            ))}
-          </Table.Row>
-        </Table.Header>
-        <Table.Body>
-          {issues.map((i) => (
-            <Table.Row key={i.id}>
-              <Table.Cell>
-                <Link href={`/issues/${i.id}`}>{i.title}</Link>
-                <div className="block md:hidden">
-                  <IssueStatusBadge status={i.status} />
-                </div>
-              </Table.Cell>
-              <Table.Cell className="hidden md:table-cell">
-                <IssueStatusBadge status={i.status} />
-              </Table.Cell>
-              <Table.Cell className="hidden md:table-cell">
-                {i.createdAt.toDateString()}
-              </Table.Cell>
-            </Table.Row>
-          ))}
-        </Table.Body>
-      </Table.Root>
+      <IssueTable searchParams={searchParams} issues={issues} />
       <Pagination
         itemCount={issueCount}
         pageSize={pageSize}
         currentPage={page}
       />
-    </div>
+    </Flex>
   );
 }
