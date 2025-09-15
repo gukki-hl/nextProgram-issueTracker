@@ -5,10 +5,11 @@ import IssuesAction from "./IssuesAction";
 import { Issue, Status } from "@prisma/client";
 import NextLink from "next/link";
 import { ArrowUpIcon } from "@radix-ui/react-icons";
+import Pagination from "@/app/component/Pagination";
 
 // 定义页面 props 的类型：searchParams 是从 URL query 中解析出来的
 interface IssuesPageProps {
-  searchParams: { status: Status; orderBy?: keyof Issue };
+  searchParams: { status: Status; orderBy?: keyof Issue; page: string };
 }
 
 const columns: { label: string; value: keyof Issue; className?: string }[] = [
@@ -31,11 +32,19 @@ export default async function IssuesPage({ searchParams }: IssuesPageProps) {
     .includes(params.orderBy as keyof Issue)
     ? { [params.orderBy as string]: "asc" }
     : undefined;
+
+  const where = status ? { status } : {}; // 如果 status 存在则添加过滤条件
+  const page = parseInt(params.page) || 1; // 获取当前页码，默认第 1 页
+  const pageSize = 10; // 每页显示的条数
   // 查询数据库：根据 status 过滤，根据 orderBy 排序
   const issues = await prisma.issue.findMany({
-    where: { status }, //过滤
+    where, //过滤
     orderBy, //排序
+    skip: (page - 1) * pageSize, //跳过前几页
+    take: pageSize, //取多少条
   });
+  // 获取总条数，用于计算总页数
+  const issueCount = await prisma.issue.count({ where }); 
 
   return (
     <div>
@@ -79,6 +88,11 @@ export default async function IssuesPage({ searchParams }: IssuesPageProps) {
           ))}
         </Table.Body>
       </Table.Root>
+      <Pagination
+        itemCount={issueCount}
+        pageSize={pageSize}
+        currentPage={page}
+      />
     </div>
   );
 }
