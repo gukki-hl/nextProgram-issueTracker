@@ -4,6 +4,7 @@ import { Issue, Status } from "@prisma/client";
 import IssuesAction from "./IssuesAction";
 import IssueTable, { columnNames, IssueQuery } from "./IssueTable";
 import { Flex } from "@radix-ui/themes";
+import { Metadata } from "next";
 
 // 定义页面 props 的类型：searchParams 是从 URL query 中解析出来的
 interface IssuesPageProps {
@@ -48,3 +49,8 @@ export default async function IssuesPage({ searchParams }: IssuesPageProps) {
     </Flex>
   );
 }
+
+export const metadata: Metadata = {
+  title: "Issue Tracker - Issue List",
+  description: "view all of project issues on the dashboard",
+};
