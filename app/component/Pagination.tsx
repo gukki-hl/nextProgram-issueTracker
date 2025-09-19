@@ -7,7 +7,8 @@ import {
 } from "@radix-ui/react-icons";
 import { Text, Button, Flex } from "@radix-ui/themes";
 import { useRouter, useSearchParams } from "next/navigation";
-import React from "react";
+import React, { Suspense } from "react";
+import Skeleton from "./Skeleton";
 
 interface Props {
   itemCount: number; //总条目数
@@ -15,7 +16,7 @@ interface Props {
   currentPage: number; //当前页码
 }
 
-const Pagination = ({ itemCount, pageSize, currentPage }: Props) => {
+const PaginationContent = ({ itemCount, pageSize, currentPage }: Props) => {
   const router = useRouter();
   const searchParams = useSearchParams(); //获取当前的查询参数
   const totalPages = Math.ceil(itemCount / pageSize); //计算总页数
@@ -70,4 +71,17 @@ const Pagination = ({ itemCount, pageSize, currentPage }: Props) => {
   );
 };
 
-export default Pagination;
+
+
+// 用 Suspense 包裹的导出组件
+const PaginationWithSuspense = ({ itemCount, pageSize, currentPage }: Props) => {
+  return (
+    <Suspense fallback={<Skeleton />}>
+      <PaginationContent itemCount={itemCount} pageSize={pageSize} currentPage={currentPage} />
+    </Suspense>
+  );
+};
+
+
+
+export default PaginationWithSuspense;
