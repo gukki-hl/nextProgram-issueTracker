@@ -1,6 +1,4 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
+// prisma/schema.prisma
 generator client {
   provider = "prisma-client-js"
 }
@@ -8,6 +6,21 @@ generator client {
 datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  accounts      Account[]
+  sessions      Session[]
+
+  // Issue 关系 - 完整定义
+  assignedIssues Issue[] @relation("AssignedIssues") // 分配的 Issue
+
+  @@map("users")
 }
 
 model Issue {
@@ -18,7 +31,11 @@ model Issue {
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
   assignedToUserId String?  @db.VarChar(255)
-  assignedToUser   User?    @relation(fields: [assignedToUserId], references: [id])
+
+  // 关系定义 - 完整双向关系
+  assignedToUser User? @relation("AssignedIssues", fields: [assignedToUserId], references: [id])
+
+  @@map("issues")
 }
 
 enum Status {
@@ -27,6 +44,7 @@ enum Status {
   CLOSED
 }
 
+// NextAuth 模型（保持不变）
 model Account {
   id                String  @id @default(cuid())
   userId            String
@@ -55,19 +73,6 @@ model Session {
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("sessions")
-}
-
-model User {
-  id             String    @id @default(cuid())
-  name           String?
-  email          String?   @unique
-  emailVerified  DateTime?
-  image          String?
-  accounts       Account[]
-  sessions       Session[]
-  assignedIssues Issue[]
-
-  @@map("users")
 }
 
 model VerificationToken {
