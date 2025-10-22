@@ -17,8 +17,7 @@ interface Props {
   issues: Issue[];
 }
 
-const IssueTable = async ({ searchParams, issues }: Props) => {
-  const params = await searchParams;
+const IssueTable = ({ searchParams, issues }: Props) => {
   return (
     <Table.Root variant="surface">
       <Table.Header>
@@ -28,10 +27,10 @@ const IssueTable = async ({ searchParams, issues }: Props) => {
               key={column.value}
               className={column.className}
             >
-              <NextLink href={{ query: { ...params, orderBy: column.value } }}>
+              <NextLink href={{ query: { ...searchParams, orderBy: column.value } }}>
                 {column.label}
               </NextLink>
-              {column.value === params.orderBy && (
+              {column.value === searchParams.orderBy && (
                 <ArrowUpIcon className="inline" />
               )}
             </Table.ColumnHeaderCell>
