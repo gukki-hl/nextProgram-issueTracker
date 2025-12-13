@@ -27,13 +27,14 @@ export default async function Home() {
           inProgressIssues={inProgress}
         />
       </Flex>
-      <Latestissues/>
+      <Latestissues />
     </Grid>
   );
 }
 
+export const dynamic = "force-dynamic";
 
-export const metadata:Metadata = {
-  title:'Issue Tracker - Dashboard',
-  description: 'view a summary of project issues on the dashboard'
-}
+export const metadata: Metadata = {
+  title: "Issue Tracker - Dashboard",
+  description: "view a summary of project issues on the dashboard",
+};
