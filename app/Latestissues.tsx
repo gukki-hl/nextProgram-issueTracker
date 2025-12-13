@@ -1,14 +1,38 @@
 import { prisma } from "@/prisma/client";
-import { Table, Flex, Avatar,Card,Heading } from "@radix-ui/themes";
+import { Table, Flex, Avatar, Card, Heading } from "@radix-ui/themes";
 import Link from "next/link";
 import { IssueStatusBadge } from "./component";
 
 const Latestissues = async () => {
-  const issues = await prisma.issue.findMany({
-    take: 5,
-    orderBy: { createdAt: "desc" },
-    include: { assignedToUser: true },
-  });
+  let issues = [];
+
+  try {
+    issues = await prisma.issue.findMany({
+      take: 5,
+      orderBy: { createdAt: "desc" },
+      include: { assignedToUser: true },
+    });
+  } catch (error) {
+    // 构建时如果数据库不可用，使用空数组
+    console.error("数据库连接失败，无法获取最新问题:", error);
+  }
+
+  if (issues.length === 0) {
+    return (
+      <Card>
+        <Heading size="6" mb="4">
+          Latest Issues
+        </Heading>
+        <Table.Root>
+          <Table.Body>
+            <Table.Row>
+              <Table.Cell>暂无问题</Table.Cell>
+            </Table.Row>
+          </Table.Body>
+        </Table.Root>
+      </Card>
+    );
+  }
 
   return (
     <Card>

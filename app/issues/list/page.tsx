@@ -9,7 +9,7 @@ import { cache } from "react";
 
 // 定义页面 props 的类型：searchParams 是从 URL query 中解析出来的
 interface IssuesPageProps {
-  searchParams: Promise<IssueQuery>
+  searchParams: Promise<IssueQuery>;
 }
 
 //使用cache优化数据获取
@@ -22,17 +22,24 @@ const fetchIssues = cache(
     const page = parseInt(query.page) || 1; // 获取当前页码，默认第 1 页
     const pageSize = 10; // 每页显示的条数
     const where = status ? { status } : {}; // 如果 status 存在则添加过滤条件
-    // 查询数据库：根据 status 过滤，根据 orderBy 排序
-    const issues = await prisma.issue.findMany({
-      where, //过滤
-      orderBy, //排序
-      skip: (page - 1) * pageSize, //跳过前几页
-      take: pageSize, //取多少条
-    });
-    // 获取总条数，用于计算总页数
-    const issueCount = await prisma.issue.count({ where });
 
-    return { issues, issueCount };
+    try {
+      // 查询数据库：根据 status 过滤，根据 orderBy 排序
+      const issues = await prisma.issue.findMany({
+        where, //过滤
+        orderBy, //排序
+        skip: (page - 1) * pageSize, //跳过前几页
+        take: pageSize, //取多少条
+      });
+      // 获取总条数，用于计算总页数
+      const issueCount = await prisma.issue.count({ where });
+
+      return { issues, issueCount };
+    } catch (error) {
+      // 构建时如果数据库不可用，返回空数据
+      console.error("数据库连接失败，使用默认值:", error);
+      return { issues: [], issueCount: 0 };
+    }
   }
 );
 
@@ -68,6 +75,9 @@ export default async function IssuesPage({ searchParams }: IssuesPageProps) {
     </Flex>
   );
 }
+
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 export const metadata: Metadata = {
   title: "Issue Tracker - Issue List",
